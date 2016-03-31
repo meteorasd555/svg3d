@@ -1,0 +1,189 @@
+<html>
+	<head>
+		<title></title>
+		<style type="text/css">
+		body,html {
+				padding: 0;
+				margin: 0;;
+			}
+			#canvas {
+				border: solid #CCC 2px;
+				margin: auto;
+				width:800px;
+				height: 600px; 
+				float: left;
+			}
+			.slider {
+				position:absolute!important;
+				right:50px;
+	
+				top:50px;
+			}
+		</style>
+		<link rel="stylesheet" type="text/css" href="jquery-ui/jquery-ui.min.css"/>
+		<script src="js/sylvester.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/raphael.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/svg3D.js" type="text/javascript" charset="utf-8"></script>
+		<script src="jquery-ui/external/jquery/jquery.js" type="text/javascript" charset="utf-8"></script>
+		<script src="jquery-ui/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div id="canvas"></div>
+		<div id="slider1" class="slider"></div>
+		<div id="slider2" class="slider" style="right:80px;"></div>
+		<div id="slider3" class="slider" style="right:110px;"></div>
+		
+		<div id="slider4" class="slider" style="top: 200px"></div>
+		<div id="slider5" class="slider" style="top: 200px;right:80px;"></div>
+		<div id="slider6" class="slider" style="top: 200px;right:110px;"></div>
+	</body>
+
+	<script type="text/javascript">
+			var width = 800, height = 600;
+			var dom = document.getElementById("canvas");
+			var scene = new Scene(dom, width, height);
+			var camera = new PerspectiveCamera(90, width / height, 0.1, 2300);
+			camera.position.z = 300;
+
+			scene.setCamera(camera);
+			
+			var obj1 = new BallGeometry(100, 12, 13,-180, 0, -0);
+			
+			scene.addGeometry(obj1);
+			
+			var obj2 = new BLineGeometry([[-50, 0, 0], [50, 0, 0], [0, 85, 0] , [0, 30, 85]], 0, -30, 0);
+			obj2.showFace = false;
+			
+			scene.addGeometry(obj2);
+			
+			var obj3 = new BoxGeometry(100, 100, 100, 200, 0, 0);
+			obj3.showFace = false;
+			scene.addGeometry(obj3);
+
+			var n = 0, e = 2.5, pace = 120;
+			var count = 0, t = Date.now();
+			function render() {
+				
+				
+				
+				requestAnimationFrame(render);
+				obj1.rotateX(0.02);
+				obj2.rotateX(0.02);
+				n += e;
+				if(n <= pace && n >= -pace) {
+					n +=  e;
+					obj3.translateY(e);
+					
+				}
+				if(n > pace || n < -pace) {
+					e = -e;
+					n +=  e;
+				}
+
+				scene.render();
+				
+				var t1 = Date.now();
+				count++;
+
+			}
+			
+			render();
+			
+			$( "#slider1" ).slider({
+				range: false,
+				orientation:"vertical",
+	
+				slide: function(a, b){
+					var val = b.value;
+					camera.position.z = 300 + val * 4;
+				}
+			});
+			
+			$( "#slider2" ).slider({
+				range: false,
+				value: 50,
+				orientation:"vertical",
+	
+				slide: function(a, b){
+					var val = b.value;
+					camera.position.x = -250 + 5 * val;
+				}
+			});
+			
+			$( "#slider3" ).slider({
+				range: false,
+				value:50,
+				orientation:"vertical",
+	
+				slide: function(a, b){
+					var val = b.value;
+					camera.position.y = -250 + 5 * val;
+				}
+			});
+			
+			$( "#slider4" ).slider({
+				value:50,
+				orientation:"vertical",
+	
+				slide: function(a, b){
+					var val = b.value;
+					offset = val - 50;
+					camera.direction[0] = 0 + offset * 0.03;
+		
+				}
+			});
+			
+			$( "#slider5" ).slider({
+				value:50,
+				orientation:"vertical",
+	
+				slide: function(a, b){
+					var val = b.value;
+					offset = val - 50;
+					camera.direction[1] = 0 + offset * 0.03;
+				}
+			});
+			
+			$( "#slider6" ).slider({
+				value:50,
+				orientation:"vertical",
+	
+				slide: function(a, b){
+					var val = b.value;
+					offset = 50 - val;
+					camera.rotationZ = 0 + offset * 0.05;
+				}
+			});
+			
+			var offset1 = 10;
+			
+			dom.onmousewheel = function(event) {
+				var sign = event.wheelDelta > 0 ? 1: -1;
+				camera.position.z = camera.position.z -= sign * 20;
+				
+			}
+			
+			dom.addEventListener("mousedown", function() {
+				
+				
+			});
+			
+			document.addEventListener("keydown", function(event) {
+				if(event.keyCode == 37) {
+					camera.position.x = camera.position.x - offset1;
+				}
+				if(event.keyCode == 38) {
+					camera.position.y = camera.position.y + offset1;
+				}
+				if(event.keyCode == 39) {
+					camera.position.x = camera.position.x + offset1;
+				}
+				if(event.keyCode == 40) {
+					camera.position.y = camera.position.y - offset1;
+				}
+				
+			});
+			
+		
+	</script>
+</html>
